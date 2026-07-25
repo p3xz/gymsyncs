@@ -166,9 +166,47 @@
       </div>
 
       <div class="view" id="view-workout" data-view-panel="workout" hidden>
-        <div class="placeholder-card fade-in">
-          <h1>Workout</h1>
-          <p>Arriving in Phase 5.</p>
+        <!-- Rest day: no workout scheduled -->
+        <div class="card rest-state fade-in" id="workoutRestState" hidden>
+          <span class="rest-state__icon" aria-hidden="true">&#127769;</span>
+          <h1>Rest Day</h1>
+          <p>Nothing scheduled today &mdash; recovery is part of the process.</p>
+        </div>
+
+        <!-- Active workout -->
+        <div id="workoutActiveState">
+          <header class="workout-header fade-in">
+            <div>
+              <p class="workout-header__label" id="workoutSplitLabel">&mdash;</p>
+              <h1 id="workoutSplitTitle">Workout</h1>
+            </div>
+            <div class="workout-timer">
+              <span class="workout-timer__dot" aria-hidden="true"></span>
+              <span class="workout-timer__value stat-number" id="workoutTimer">00:00</span>
+            </div>
+          </header>
+
+          <div
+            class="progress-track fade-in"
+            role="progressbar"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+            id="progressTrack"
+          >
+            <div class="progress-track__fill" id="progressFill" style="width: 0%"></div>
+          </div>
+          <p class="progress-label" id="progressLabel">0 of 0 exercises completed</p>
+
+          <ul class="exercise-list" id="exerciseList"></ul>
+
+          <button class="finish-workout-btn" id="finishWorkoutBtn" type="button">
+            Finish Workout
+          </button>
+
+          <div class="finish-banner" id="finishBanner" hidden>
+            <p>&#127881; Nice work! The full summary screen arrives in Phase 6.</p>
+          </div>
         </div>
       </div>
 

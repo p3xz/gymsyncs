@@ -574,6 +574,259 @@ p {
   background: var(--color-card-hover);
 }
 
+/* ---------- Workout Screen ---------- */
+.rest-state {
+  text-align: center;
+  padding: var(--space-7) var(--space-5);
+}
+
+.rest-state__icon {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: var(--space-3);
+}
+
+.rest-state p {
+  margin-top: var(--space-1);
+}
+
+.workout-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.workout-header__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-primary-strong);
+  margin-bottom: var(--space-1);
+}
+
+.workout-timer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+
+.workout-timer__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-primary-strong);
+  box-shadow: 0 0 8px 1px var(--color-primary-glow);
+  animation: pulse-dot 2s var(--ease-standard) infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
+}
+
+.workout-timer__value {
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+
+/* Progress bar */
+.progress-track {
+  width: 100%;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+.progress-track__fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary), var(--color-primary-strong));
+  border-radius: var(--radius-pill);
+  transition: width var(--duration-slow) var(--ease-standard);
+}
+
+.progress-label {
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-5);
+}
+
+/* Exercise list */
+.exercise-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.exercise-card {
+  padding: var(--space-4);
+  transition: opacity var(--duration-base) var(--ease-standard);
+}
+
+.exercise-card__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.exercise-card__name {
+  font-weight: 600;
+  color: var(--color-text);
+  transition: color var(--duration-base) var(--ease-standard),
+    text-decoration-color var(--duration-base) var(--ease-standard);
+}
+
+.exercise-card__target {
+  margin-top: 2px;
+  font-size: 0.82rem;
+  color: var(--color-text-tertiary);
+}
+
+.exercise-card__inputs {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.exercise-card__inputs label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+}
+
+.exercise-card__inputs input {
+  width: 100%;
+  padding: 10px var(--space-3);
+  font-size: 0.92rem;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+.exercise-card__inputs input::placeholder {
+  color: var(--color-text-tertiary);
+}
+
+.exercise-card__inputs input:focus {
+  outline: none;
+  border-color: var(--color-primary-strong);
+}
+
+/* Custom checkbox: real input for a11y, visually hidden; a styled label stands in */
+.exercise-card__checkbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+}
+
+.exercise-card__check-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1.5px solid var(--color-border-strong);
+  color: transparent;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-standard),
+    border-color var(--duration-base) var(--ease-standard),
+    color var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.exercise-card__check-visual:active {
+  transform: scale(0.9);
+}
+
+.exercise-card__checkbox:checked + .exercise-card__check-visual {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.exercise-card__checkbox:focus-visible + .exercise-card__check-visual {
+  outline: 2px solid var(--color-primary-strong);
+  outline-offset: 2px;
+}
+
+/* Completed state: dims the card and strikes the exercise name */
+.exercise-card:has(.exercise-card__checkbox:checked) {
+  opacity: 0.6;
+}
+
+.exercise-card:has(.exercise-card__checkbox:checked) .exercise-card__name {
+  text-decoration: line-through;
+  text-decoration-color: var(--color-text-tertiary);
+}
+
+/* Finish Workout */
+.finish-workout-btn {
+  width: 100%;
+  padding: 18px var(--space-5);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #ffffff;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: 0 10px 30px rgba(94, 53, 177, 0.35);
+  transition: background var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard);
+}
+
+.finish-workout-btn:hover {
+  background: var(--color-primary-strong);
+}
+
+.finish-workout-btn:active {
+  transform: scale(0.98);
+}
+
+.finish-workout-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.finish-banner {
+  margin-top: var(--space-4);
+  padding: var(--space-4);
+  text-align: center;
+  background: var(--color-primary-glow);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+}
+
+.finish-banner p {
+  color: var(--color-text);
+  font-weight: 600;
+}
+
 /* ---------- Profile credits ---------- */
 .credits {
   margin-top: var(--space-6);
@@ -744,4 +997,4 @@ p {
     max-width: var(--content-max-width);
     margin-inline: auto;
   }
-} 
+}

@@ -63,6 +63,10 @@
     });
 
     moveIndicatorToActiveLink();
+
+    if (viewName === 'workout') {
+      WorkoutScreen.onEnter();
+    }
   }
 
   /**
@@ -372,6 +376,179 @@
       // The Workout screen itself arrives in Phase 5; for now this just
       // takes the person to that tab using the existing nav logic.
       this.els.startWorkoutBtn.addEventListener('click', () => setActiveView('workout'));
+    },
+  };
+
+  /* ------------------------------------------------------------------ *
+   * WORKOUT SCREEN (Phase 5)
+   * Renders today's exercises from the Workout Logic module, tracks a
+   * live elapsed timer, and lets the person log weight/notes and check
+   * exercises off. Persistence and the full summary belong to Phase 6 —
+   * this module only owns the live interaction.
+   * ------------------------------------------------------------------ */
+  const WorkoutScreen = {
+    els: {
+      restState: document.getElementById('workoutRestState'),
+      activeState: document.getElementById('workoutActiveState'),
+      splitLabel: document.getElementById('workoutSplitLabel'),
+      splitTitle: document.getElementById('workoutSplitTitle'),
+      timerValue: document.getElementById('workoutTimer'),
+      progressTrack: document.getElementById('progressTrack'),
+      progressFill: document.getElementById('progressFill'),
+      progressLabel: document.getElementById('progressLabel'),
+      exerciseList: document.getElementById('exerciseList'),
+      finishBtn: document.getElementById('finishWorkoutBtn'),
+      finishBanner: document.getElementById('finishBanner'),
+    },
+
+    hasEntered: false, // guards against re-rendering / re-timing on every tab switch
+    timerIntervalId: null,
+    startTime: null,
+    totalExercises: 0,
+
+    /** Builds one exercise card as real DOM nodes (no innerHTML with data). */
+    buildExerciseCard(exercise) {
+      const li = document.createElement('li');
+      li.className = 'card exercise-card';
+      li.dataset.exerciseId = exercise.id;
+
+      const top = document.createElement('div');
+      top.className = 'exercise-card__top';
+
+      const info = document.createElement('div');
+      const name = document.createElement('p');
+      name.className = 'exercise-card__name';
+      name.textContent = exercise.name;
+      const target = document.createElement('p');
+      target.className = 'exercise-card__target';
+      target.textContent = `${exercise.targetSets} sets \u00d7 ${exercise.targetReps} reps`;
+      info.append(name, target);
+
+      const checkWrap = document.createElement('div');
+      const checkbox = document.createElement('input');
+      checkbox.type = 'checkbox';
+      checkbox.className = 'exercise-card__checkbox';
+      checkbox.id = `check-${exercise.id}`;
+      const checkLabel = document.createElement('label');
+      checkLabel.className = 'exercise-card__check-visual';
+      checkLabel.setAttribute('for', checkbox.id);
+      checkLabel.setAttribute('aria-label', `Mark ${exercise.name} complete`);
+      checkLabel.innerHTML = '&#10003;'; // checkmark glyph, static markup only
+      checkWrap.append(checkbox, checkLabel);
+
+      top.append(info, checkWrap);
+
+      const inputs = document.createElement('div');
+      inputs.className = 'exercise-card__inputs';
+
+      const weightLabel = document.createElement('label');
+      const weightSpan = document.createElement('span');
+      weightSpan.textContent = 'Weight (kg)';
+      const weightInput = document.createElement('input');
+      weightInput.type = 'number';
+      weightInput.inputMode = 'decimal';
+      weightInput.min = '0';
+      weightInput.step = '0.5';
+      weightInput.placeholder = '0';
+      weightInput.className = 'exercise-card__weight';
+      weightLabel.append(weightSpan, weightInput);
+
+      const notesLabel = document.createElement('label');
+      const notesSpan = document.createElement('span');
+      notesSpan.textContent = 'Notes';
+      const notesInput = document.createElement('input');
+      notesInput.type = 'text';
+      notesInput.maxLength = 80;
+      notesInput.placeholder = 'Optional notes';
+      notesInput.className = 'exercise-card__notes';
+      notesLabel.append(notesSpan, notesInput);
+
+      inputs.append(weightLabel, notesLabel);
+      li.append(top, inputs);
+
+      checkbox.addEventListener('change', () => this.updateProgress());
+
+      return li;
+    },
+
+    /** Renders every exercise for today's split into the list. */
+    renderExercises(exercises) {
+      this.els.exerciseList.innerHTML = '';
+      exercises.forEach((exercise) => {
+        this.els.exerciseList.appendChild(this.buildExerciseCard(exercise));
+      });
+      this.totalExercises = exercises.length;
+      this.updateProgress();
+    },
+
+    /** Recalculates the progress bar/label from however many boxes are checked. */
+    updateProgress() {
+      const checked = this.els.exerciseList.querySelectorAll(
+        '.exercise-card__checkbox:checked'
+      ).length;
+      const percent = this.totalExercises === 0 ? 0 : Math.round((checked / this.totalExercises) * 100);
+
+      this.els.progressFill.style.width = `${percent}%`;
+      this.els.progressTrack.setAttribute('aria-valuenow', String(percent));
+      this.els.progressLabel.textContent = `${checked} of ${this.totalExercises} exercises completed`;
+    },
+
+    /** Formats elapsed milliseconds as MM:SS, or H:MM:SS past the hour mark. */
+    formatElapsed(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const hours = Math.floor(totalSeconds / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const pad = (n) => String(n).padStart(2, '0');
+
+      return hours > 0
+        ? `${hours}:${pad(minutes)}:${pad(seconds)}`
+        : `${pad(minutes)}:${pad(seconds)}`;
+    },
+
+    /** Starts the live elapsed-time timer, ticking once a second. */
+    startTimer() {
+      this.startTime = Date.now();
+      this.timerIntervalId = window.setInterval(() => {
+        this.els.timerValue.textContent = this.formatElapsed(Date.now() - this.startTime);
+      }, 1000);
+    },
+
+    stopTimer() {
+      if (this.timerIntervalId) {
+        window.clearInterval(this.timerIntervalId);
+        this.timerIntervalId = null;
+      }
+    },
+
+    /** Ends the live workout: stops the timer and shows a placeholder confirmation. */
+    finishWorkout() {
+      this.stopTimer();
+      this.els.finishBtn.disabled = true;
+      this.els.finishBanner.hidden = false;
+    },
+
+    /**
+     * Called every time the Workout tab becomes active. Only does the real
+     * setup work once per day's workout — repeat visits just leave things
+     * exactly as the person left them.
+     */
+    onEnter() {
+      const { split, exercises } = getTodaysWorkout();
+      const isRest = split === 'REST';
+
+      this.els.restState.hidden = !isRest;
+      this.els.activeState.hidden = isRest;
+
+      if (isRest || this.hasEntered) return;
+
+      this.hasEntered = true;
+      this.els.splitLabel.textContent = split;
+      this.els.splitTitle.textContent = `${split.charAt(0)}${split.slice(1).toLowerCase()} Day`;
+      this.renderExercises(exercises);
+      this.startTimer();
+
+      this.els.finishBtn.addEventListener('click', () => this.finishWorkout());
     },
   };
 
