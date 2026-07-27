@@ -45,6 +45,35 @@
     </div>
   </div>
 
+  <!-- ============ WORKOUT SUMMARY ============ -->
+  <!-- Shown after Finish Workout. Populated and revealed by WorkoutScreen.finishWorkout(). -->
+  <div class="summary-overlay" id="workoutSummary" hidden>
+    <div class="summary-card fade-in">
+      <span class="summary-card__icon" aria-hidden="true">&#127881;</span>
+      <h1>Workout Complete!</h1>
+      <p class="summary-card__split" id="summarySplit">&mdash;</p>
+
+      <div class="summary-stats">
+        <div class="summary-stat">
+          <p class="summary-stat__value stat-number" id="summaryDuration">00:00</p>
+          <p class="summary-stat__label">Duration</p>
+        </div>
+        <div class="summary-stat">
+          <p class="summary-stat__value stat-number" id="summaryExercises">0/0</p>
+          <p class="summary-stat__label">Exercises</p>
+        </div>
+        <div class="summary-stat">
+          <p class="summary-stat__value stat-number" id="summaryCalories">0</p>
+          <p class="summary-stat__label">Calories</p>
+        </div>
+      </div>
+
+      <p class="summary-card__note">Great work &mdash; your progress has been saved.</p>
+
+      <button class="summary-card__done" id="summaryDoneBtn" type="button">Done</button>
+    </div>
+  </div>
+
   <!-- App shell: header only shows on desktop sidebar layout -->
   <div class="app">
 
@@ -58,7 +87,7 @@
             <rect x="2" y="8.5" width="20" height="7" rx="2.5" stroke="currentColor" stroke-width="1.8"/>
           </svg>
         </span>
-        <span class="nav__brand-text">GymSync<sup>v2</sup></span>
+        <span class="nav__brand-text">GymSync<sup>v6</sup></span>
       </div>
 
       <ul class="nav__list" id="navList">
@@ -203,10 +232,6 @@
           <button class="finish-workout-btn" id="finishWorkoutBtn" type="button">
             Finish Workout
           </button>
-
-          <div class="finish-banner" id="finishBanner" hidden>
-            <p>&#127881; Nice work! The full summary screen arrives in Phase 6.</p>
-          </div>
         </div>
       </div>
 

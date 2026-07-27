@@ -10,10 +10,10 @@
 
 *A modern Apple-inspired fitness tracker built with HTML, CSS & Vanilla JavaScript.*
 
-**Currently in Phase 4**
+**Currently in Phase 6**
 
-![Version](https://img.shields.io/badge/version-v0.4.0-4CAF50?style=for-the-badge)
-![Phase](https://img.shields.io/badge/Phase-4-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-v0.6.0-4CAF50?style=for-the-badge)
+![Phase](https://img.shields.io/badge/Phase-6-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-Active%20Development-orange?style=for-the-badge)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -83,6 +83,30 @@ No frameworks. No backend. Just strong fundamentals.
   same source of truth instead of duplicating the logic
 - Dashboard now reflects it live — e.g. *"5 exercises scheduled"* instead of
   a static label
+
+---
+
+## 🎉 Workout Summary *(New in Phase 6)*
+
+- Congratulations screen shown after Finish Workout
+- Workout duration, exercises completed, and an estimated calories burned
+- Real persistence: streak, weekly completion, and last workout now save to
+  Local Storage — the dashboard stats are no longer placeholders
+- Streak logic only advances once per calendar day and resets if a training
+  day is missed
+- Weekly completion count resets automatically each Monday
+
+---
+
+## 🏋️ Workout Screen *(New in Phase 5)*
+
+- Live elapsed timer, starts the moment a training day's workout is opened
+- Exercise cards rendered straight from the Phase 4 workout-logic engine
+- Per-exercise weight and notes input
+- Custom, accessible completed checkbox per exercise
+- Live progress bar tracking exercises completed
+- Finish Workout flow (full save + summary screen arrive in Phase 6)
+- Dedicated Rest Day state on days with nothing scheduled
 
 ---
 
@@ -159,7 +183,7 @@ assets/screenshots/
 ### Deployment
 
 - GitHub Pages
-- Vercel
+- Netlify
 
 ---
 
@@ -247,7 +271,7 @@ inside your browser.
 
 ---
 
-## ✅ Phase 4 (Current)
+## ✅ Phase 4
 
 - Automatic workout-split resolution engine
 - Per-split exercise database (sets & rep targets)
@@ -256,33 +280,35 @@ inside your browser.
 
 ---
 
+## ✅ Phase 5
+
+- Live workout timer
+- Exercise cards with weight & notes input
+- Completed checkbox per exercise
+- Live progress bar
+- Finish Workout flow
+- Rest Day state on the Workout tab
+
+---
+
+## ✅ Phase 6 (Current)
+
+- Congratulations / summary screen
+- Duration, exercises completed & calories burned
+- Streak, weekly completion & last workout now persist for real
+- Dashboard stats reflect actual saved progress
+
+---
+
 ## 🚧 Next Phase
 
-- Workout screen with live timer
-- Exercise cards with weight/notes input
-- Completed checkboxes & progress bar
-- Finish Workout flow
+- Workout history list
+- Previous weights & notes per exercise
+- Progress over time
 
 ---
 
 # 🛣 Roadmap
-
-## Phase 5 — Workout Screen
-
-- Live timer
-- Exercise cards
-- Weight input & notes
-- Completed checkbox per exercise
-- Progress bar
-- Finish Workout button
-
-## Phase 6 — Workout Summary
-
-- Workout duration
-- Exercises completed
-- Calories burned
-- Congratulations screen
-- Persist streak / weekly completion / last workout
 
 ## Phase 7 — History
 

@@ -300,6 +300,113 @@ p {
   transition: transform var(--duration-slow) var(--ease-standard);
 }
 
+/* ---------- Workout Summary / Congratulations ---------- */
+.summary-overlay[hidden] {
+  display: none;
+}
+
+.summary-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: radial-gradient(
+    circle at 50% 20%,
+    rgba(94, 53, 177, 0.18),
+    transparent 60%
+  ),
+  var(--color-bg);
+}
+
+.summary-card {
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-2);
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-7) var(--space-5);
+  backdrop-filter: var(--blur-glass);
+  -webkit-backdrop-filter: var(--blur-glass);
+  box-shadow: var(--shadow-soft);
+}
+
+.summary-card__icon {
+  font-size: 2.25rem;
+  margin-bottom: var(--space-1);
+}
+
+.summary-card__split {
+  color: var(--color-primary-strong);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  margin-bottom: var(--space-3);
+}
+
+.summary-stats {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-2);
+  margin: var(--space-2) 0 var(--space-4);
+}
+
+.summary-stat {
+  padding: var(--space-3) var(--space-2);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+}
+
+.summary-stat__value {
+  font-size: 1.1rem;
+  color: var(--color-text);
+}
+
+.summary-stat__label {
+  margin-top: 4px;
+  font-size: 0.68rem;
+  color: var(--color-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.summary-card__note {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.summary-card__done {
+  width: 100%;
+  padding: 14px var(--space-4);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--color-primary);
+  border-radius: var(--radius-md);
+  box-shadow: 0 6px 20px rgba(94, 53, 177, 0.3);
+  transition: background var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.summary-card__done:hover {
+  background: var(--color-primary-strong);
+}
+
+.summary-card__done:active {
+  transform: scale(0.97);
+}
+
 /* ---------- App Shell ---------- */
 .app {
   display: flex;

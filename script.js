@@ -196,6 +196,30 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * DATE KEYS — local (not UTC) yyyy-mm-dd keys, used to compare "days"
+   * for streak and weekly-completion logic without timezone drift.
+   * ------------------------------------------------------------------ */
+  function toDateKey(date) {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
+  function addDays(date, amount) {
+    const result = new Date(date);
+    result.setDate(result.getDate() + amount);
+    return result;
+  }
+
+  /** @returns {string} date key for the Monday that starts this date's week. */
+  function getWeekStartKey(date) {
+    const dayIndex = date.getDay(); // 0 = Sunday
+    const daysSinceMonday = (dayIndex + 6) % 7;
+    return toDateKey(addDays(date, -daysSinceMonday));
+  }
+
+  /* ------------------------------------------------------------------ *
    * WORKOUT LOGIC (Phase 4)
    * Two responsibilities: (1) map each weekday to its split, and
    * (2) map each split to the exercises that make it up. Together these
@@ -398,13 +422,23 @@
       progressLabel: document.getElementById('progressLabel'),
       exerciseList: document.getElementById('exerciseList'),
       finishBtn: document.getElementById('finishWorkoutBtn'),
-      finishBanner: document.getElementById('finishBanner'),
+      summaryOverlay: document.getElementById('workoutSummary'),
+      summarySplit: document.getElementById('summarySplit'),
+      summaryDuration: document.getElementById('summaryDuration'),
+      summaryExercises: document.getElementById('summaryExercises'),
+      summaryCalories: document.getElementById('summaryCalories'),
+      summaryDoneBtn: document.getElementById('summaryDoneBtn'),
     },
+
+    // Rough average for resistance training; good enough for a personal estimate,
+    // not a substitute for a heart-rate-based calculation.
+    CALORIES_PER_MINUTE: 6.5,
 
     hasEntered: false, // guards against re-rendering / re-timing on every tab switch
     timerIntervalId: null,
     startTime: null,
     totalExercises: 0,
+    currentSplit: null,
 
     /** Builds one exercise card as real DOM nodes (no innerHTML with data). */
     buildExerciseCard(exercise) {
@@ -521,11 +555,69 @@
       }
     },
 
-    /** Ends the live workout: stops the timer and shows a placeholder confirmation. */
+    /**
+     * Persists this workout's result: updates the streak (only once per
+     * calendar day), the weekly completion count (reset each Monday), and
+     * the last-workout record the dashboard displays.
+     */
+    persistProgress({ split, exercisesCompleted, totalExercises, durationLabel }) {
+      const now = new Date();
+      const todayKey = toDateKey(now);
+      const lastWorkoutDateKey = Storage.get('lastWorkoutDateKey', null);
+      const isNewTrainingDay = lastWorkoutDateKey !== todayKey;
+
+      if (isNewTrainingDay) {
+        // Streak: only continues if the previous logged day was yesterday.
+        const yesterdayKey = toDateKey(addDays(now, -1));
+        const currentStreak = Storage.get('streak', 0);
+        const nextStreak = lastWorkoutDateKey === yesterdayKey ? currentStreak + 1 : 1;
+        Storage.set('streak', nextStreak);
+
+        // Weekly completion: resets whenever we've crossed into a new Monday.
+        const thisWeekStartKey = getWeekStartKey(now);
+        const storedWeekStartKey = Storage.get('completedWeekStartKey', null);
+        const priorCompleted = storedWeekStartKey === thisWeekStartKey
+          ? Storage.get('completedThisWeek', 0)
+          : 0;
+        Storage.set('completedThisWeek', priorCompleted + 1);
+        Storage.set('completedWeekStartKey', thisWeekStartKey);
+
+        Storage.set('lastWorkoutDateKey', todayKey);
+      }
+
+      Storage.set('lastWorkout', {
+        split,
+        dateLabel: dateFormatter.format(now),
+        durationLabel,
+        exercisesCompleted,
+        totalExercises,
+      });
+    },
+
+    /** Ends the live workout: stops the timer, saves progress, shows the summary. */
     finishWorkout() {
       this.stopTimer();
       this.els.finishBtn.disabled = true;
-      this.els.finishBanner.hidden = false;
+
+      const durationMs = Date.now() - this.startTime;
+      const durationLabel = this.formatElapsed(durationMs);
+      const exercisesCompleted = this.els.exerciseList.querySelectorAll(
+        '.exercise-card__checkbox:checked'
+      ).length;
+      const calories = Math.round((durationMs / 60000) * this.CALORIES_PER_MINUTE);
+
+      this.persistProgress({
+        split: this.currentSplit,
+        exercisesCompleted,
+        totalExercises: this.totalExercises,
+        durationLabel,
+      });
+
+      this.els.summarySplit.textContent = this.currentSplit;
+      this.els.summaryDuration.textContent = durationLabel;
+      this.els.summaryExercises.textContent = `${exercisesCompleted}/${this.totalExercises}`;
+      this.els.summaryCalories.textContent = String(calories);
+      this.els.summaryOverlay.hidden = false;
     },
 
     /**
@@ -543,12 +635,18 @@
       if (isRest || this.hasEntered) return;
 
       this.hasEntered = true;
+      this.currentSplit = split;
       this.els.splitLabel.textContent = split;
       this.els.splitTitle.textContent = `${split.charAt(0)}${split.slice(1).toLowerCase()} Day`;
       this.renderExercises(exercises);
       this.startTimer();
 
       this.els.finishBtn.addEventListener('click', () => this.finishWorkout());
+      this.els.summaryDoneBtn.addEventListener('click', () => {
+        this.els.summaryOverlay.hidden = true;
+        Dashboard.renderStats();
+        setActiveView('home');
+      });
     },
   };
 
