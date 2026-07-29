@@ -934,6 +934,114 @@ p {
   font-weight: 600;
 }
 
+/* ---------- History ---------- */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.history-empty {
+  padding: var(--space-6) var(--space-5);
+  text-align: center;
+  color: var(--color-text-tertiary);
+}
+
+.history-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.history-card__summary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  text-align: left;
+}
+
+.history-card__left {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.history-card__split {
+  font-weight: 700;
+  color: var(--color-primary-strong);
+  letter-spacing: 0.02em;
+}
+
+.history-card__date {
+  font-size: 0.85rem;
+  color: var(--color-text-tertiary);
+  white-space: nowrap;
+}
+
+.history-card__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+.history-card__meta {
+  font-size: 0.82rem;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+}
+
+.history-card__chevron {
+  display: inline-block;
+  color: var(--color-text-tertiary);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+
+.history-card__summary[aria-expanded='true'] .history-card__chevron {
+  transform: rotate(180deg);
+}
+
+.history-card__details {
+  padding: 0 var(--space-4) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.history-card__details[hidden] {
+  display: none;
+}
+
+.history-card__exercise {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  font-size: 0.9rem;
+}
+
+.history-card__exercise-name {
+  color: var(--color-text);
+}
+
+.history-card__exercise-status {
+  margin-left: var(--space-1);
+  color: var(--color-primary-strong);
+}
+
+.history-card__exercise-meta {
+  color: var(--color-text-tertiary);
+  font-size: 0.82rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
 /* ---------- Profile credits ---------- */
 .credits {
   margin-top: var(--space-6);

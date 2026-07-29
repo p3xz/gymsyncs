@@ -67,6 +67,10 @@
     if (viewName === 'workout') {
       WorkoutScreen.onEnter();
     }
+
+    if (viewName === 'history') {
+      HistoryScreen.render();
+    }
   }
 
   /**
@@ -555,12 +559,30 @@
       }
     },
 
+    /** Reads the live weight/notes/completed state straight out of the DOM. */
+    collectExerciseData() {
+      return Array.from(this.els.exerciseList.querySelectorAll('.exercise-card')).map((card) => {
+        const checkbox = card.querySelector('.exercise-card__checkbox');
+        const weightInput = card.querySelector('.exercise-card__weight');
+        const notesInput = card.querySelector('.exercise-card__notes');
+        const nameEl = card.querySelector('.exercise-card__name');
+
+        return {
+          name: nameEl.textContent,
+          completed: checkbox.checked,
+          weight: weightInput.value.trim() ? Number(weightInput.value) : null,
+          notes: notesInput.value.trim() || null,
+        };
+      });
+    },
+
     /**
      * Persists this workout's result: updates the streak (only once per
-     * calendar day), the weekly completion count (reset each Monday), and
-     * the last-workout record the dashboard displays.
+     * calendar day), the weekly completion count (reset each Monday), the
+     * last-workout record the dashboard displays, and a full entry in the
+     * history log (Phase 7).
      */
-    persistProgress({ split, exercisesCompleted, totalExercises, durationLabel }) {
+    persistProgress({ split, exercisesCompleted, totalExercises, durationLabel, calories, exerciseData }) {
       const now = new Date();
       const todayKey = toDateKey(now);
       const lastWorkoutDateKey = Storage.get('lastWorkoutDateKey', null);
@@ -592,6 +614,21 @@
         exercisesCompleted,
         totalExercises,
       });
+
+      // Full history entry — newest first, capped so storage can't grow unbounded.
+      const history = Storage.get('workoutHistory', []);
+      history.unshift({
+        id: `${todayKey}-${Date.now()}`,
+        dateKey: todayKey,
+        dateLabel: dateFormatter.format(now),
+        split,
+        durationLabel,
+        exercisesCompleted,
+        totalExercises,
+        calories,
+        exercises: exerciseData,
+      });
+      Storage.set('workoutHistory', history.slice(0, 100));
     },
 
     /** Ends the live workout: stops the timer, saves progress, shows the summary. */
@@ -601,9 +638,8 @@
 
       const durationMs = Date.now() - this.startTime;
       const durationLabel = this.formatElapsed(durationMs);
-      const exercisesCompleted = this.els.exerciseList.querySelectorAll(
-        '.exercise-card__checkbox:checked'
-      ).length;
+      const exerciseData = this.collectExerciseData();
+      const exercisesCompleted = exerciseData.filter((e) => e.completed).length;
       const calories = Math.round((durationMs / 60000) * this.CALORIES_PER_MINUTE);
 
       this.persistProgress({
@@ -611,6 +647,8 @@
         exercisesCompleted,
         totalExercises: this.totalExercises,
         durationLabel,
+        calories,
+        exerciseData,
       });
 
       this.els.summarySplit.textContent = this.currentSplit;
@@ -646,6 +684,115 @@
         this.els.summaryOverlay.hidden = true;
         Dashboard.renderStats();
         setActiveView('home');
+      });
+    },
+  };
+
+  /* ------------------------------------------------------------------ *
+   * HISTORY (Phase 7)
+   * Reads the workoutHistory log built by WorkoutScreen.persistProgress
+   * and renders it as an expandable list. Re-renders every time the tab
+   * opens, since new entries can appear at any point in the session.
+   * ------------------------------------------------------------------ */
+  const HistoryScreen = {
+    els: {
+      meta: document.getElementById('historyMeta'),
+      totalWorkouts: document.getElementById('historyTotalWorkouts'),
+      streak: document.getElementById('historyStreak'),
+      list: document.getElementById('historyList'),
+    },
+
+    /** Builds one expandable history entry as real DOM nodes. */
+    buildEntryCard(entry) {
+      const li = document.createElement('li');
+      li.className = 'card history-card';
+
+      const summary = document.createElement('button');
+      summary.type = 'button';
+      summary.className = 'history-card__summary';
+      summary.setAttribute('aria-expanded', 'false');
+
+      const left = document.createElement('div');
+      left.className = 'history-card__left';
+      const splitEl = document.createElement('span');
+      splitEl.className = 'history-card__split';
+      splitEl.textContent = entry.split;
+      const dateEl = document.createElement('span');
+      dateEl.className = 'history-card__date';
+      dateEl.textContent = entry.dateLabel;
+      left.append(splitEl, dateEl);
+
+      const right = document.createElement('div');
+      right.className = 'history-card__right';
+      const metaEl = document.createElement('span');
+      metaEl.className = 'history-card__meta';
+      metaEl.textContent = `${entry.exercisesCompleted}/${entry.totalExercises} \u2022 ${entry.durationLabel} \u2022 ${entry.calories} cal`;
+      const chevron = document.createElement('span');
+      chevron.className = 'history-card__chevron';
+      chevron.setAttribute('aria-hidden', 'true');
+      chevron.innerHTML = '&#8964;';
+      right.append(metaEl, chevron);
+
+      summary.append(left, right);
+
+      const details = document.createElement('div');
+      details.className = 'history-card__details';
+      details.hidden = true;
+
+      entry.exercises.forEach((exercise) => {
+        const row = document.createElement('div');
+        row.className = 'history-card__exercise';
+
+        const name = document.createElement('p');
+        name.className = 'history-card__exercise-name';
+        name.textContent = exercise.name;
+        if (exercise.completed) {
+          const check = document.createElement('span');
+          check.className = 'history-card__exercise-status';
+          check.textContent = '\u2713';
+          name.appendChild(check);
+        }
+
+        const meta = document.createElement('p');
+        meta.className = 'history-card__exercise-meta';
+        const weightText = exercise.weight != null ? `${exercise.weight} kg` : 'No weight logged';
+        meta.textContent = exercise.notes ? `${weightText} \u2014 ${exercise.notes}` : weightText;
+
+        row.append(name, meta);
+        details.appendChild(row);
+      });
+
+      summary.addEventListener('click', () => {
+        const isExpanded = summary.getAttribute('aria-expanded') === 'true';
+        summary.setAttribute('aria-expanded', String(!isExpanded));
+        details.hidden = isExpanded;
+      });
+
+      li.append(summary, details);
+      return li;
+    },
+
+    render() {
+      const history = Storage.get('workoutHistory', []);
+
+      this.els.totalWorkouts.textContent = String(history.length);
+      this.els.streak.textContent = String(Storage.get('streak', 0));
+      this.els.meta.textContent = history.length
+        ? `${history.length} workout${history.length === 1 ? '' : 's'} logged`
+        : 'No workouts logged yet';
+
+      this.els.list.innerHTML = '';
+
+      if (history.length === 0) {
+        const empty = document.createElement('li');
+        empty.className = 'card history-empty';
+        empty.textContent = 'Finish a workout to see it show up here.';
+        this.els.list.appendChild(empty);
+        return;
+      }
+
+      history.forEach((entry) => {
+        this.els.list.appendChild(this.buildEntryCard(entry));
       });
     },
   };

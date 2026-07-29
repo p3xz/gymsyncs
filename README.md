@@ -10,10 +10,10 @@
 
 *A modern Apple-inspired fitness tracker built with HTML, CSS & Vanilla JavaScript.*
 
-**Currently in Phase 6**
+**Currently in Phase 7**
 
-![Version](https://img.shields.io/badge/version-v0.6.0-4CAF50?style=for-the-badge)
-![Phase](https://img.shields.io/badge/Phase-6-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-v0.7.0-4CAF50?style=for-the-badge)
+![Phase](https://img.shields.io/badge/Phase-7-blue?style=for-the-badge)
 ![Status](https://img.shields.io/badge/status-Active%20Development-orange?style=for-the-badge)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
@@ -83,6 +83,15 @@ No frameworks. No backend. Just strong fundamentals.
   same source of truth instead of duplicating the logic
 - Dashboard now reflects it live — e.g. *"5 exercises scheduled"* instead of
   a static label
+
+---
+
+## 🕓 History *(New in Phase 7)*
+
+- Full workout history log, newest first
+- Every past entry expands to show each exercise's logged weight and notes
+- Total workouts and current streak shown at a glance
+- Honest empty state until the first workout is finished
 
 ---
 
@@ -291,7 +300,7 @@ inside your browser.
 
 ---
 
-## ✅ Phase 6 (Current)
+## ✅ Phase 6
 
 - Congratulations / summary screen
 - Duration, exercises completed & calories burned
@@ -300,21 +309,23 @@ inside your browser.
 
 ---
 
+## ✅ Phase 7 (Current)
+
+- Full workout history log
+- Expandable entries showing per-exercise weight & notes
+- Total workouts & streak summary
+- Empty state for new users
+
+---
+
 ## 🚧 Next Phase
 
-- Workout history list
-- Previous weights & notes per exercise
-- Progress over time
+- Animation & micro-interaction pass
+- Mobile & performance optimization
 
 ---
 
 # 🛣 Roadmap
-
-## Phase 7 — History
-
-- Past workouts
-- Previous weights & notes
-- Dates & progress over time
 
 ## Phase 8 — Polish
 
