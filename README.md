@@ -10,11 +10,11 @@
 
 *A modern Apple-inspired fitness tracker built with HTML, CSS & Vanilla JavaScript.*
 
-**Currently in Phase 7**
+**v1.0 Complete — Phases 1-8**
 
-![Version](https://img.shields.io/badge/version-v0.7.0-4CAF50?style=for-the-badge)
-![Phase](https://img.shields.io/badge/Phase-7-blue?style=for-the-badge)
-![Status](https://img.shields.io/badge/status-Active%20Development-orange?style=for-the-badge)
+![Version](https://img.shields.io/badge/version-v1.0.0-4CAF50?style=for-the-badge)
+![Phase](https://img.shields.io/badge/Phase-8%2F8-blue?style=for-the-badge)
+![Status](https://img.shields.io/badge/status-v1.0%20Released-brightgreen?style=for-the-badge)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-ES6-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
@@ -83,6 +83,19 @@ No frameworks. No backend. Just strong fundamentals.
   same source of truth instead of duplicating the logic
 - Dashboard now reflects it live — e.g. *"5 exercises scheduled"* instead of
   a static label
+
+---
+
+## ✨ Polish *(New in Phase 8)*
+
+- Fixed an iOS Safari bug where logging a weight mid-workout would zoom the
+  whole page in (inputs were rendering under the 16px zoom threshold)
+- Removed the old mobile tap delay and double-tap-zoom on every button/link
+- Page no longer rubber-bands past the top/bottom on mobile
+- Checkboxes pop and dashboard stats pulse when they actually change —
+  not on every load, only on real updates
+- Subtle hover lift on cards for desktop
+- Emerald Green + Black theme, swapped in from a single token change
 
 ---
 
@@ -192,7 +205,7 @@ assets/screenshots/
 ### Deployment
 
 - GitHub Pages
-- Vercel
+- Netlify
 
 ---
 
@@ -309,7 +322,7 @@ inside your browser.
 
 ---
 
-## ✅ Phase 7 (Current)
+## ✅ Phase 7
 
 - Full workout history log
 - Expandable entries showing per-exercise weight & notes
@@ -318,19 +331,27 @@ inside your browser.
 
 ---
 
-## 🚧 Next Phase
+## ✅ Phase 8 (Current)
 
-- Animation & micro-interaction pass
-- Mobile & performance optimization
+- Fixed iOS input-zoom bug on the workout screen
+- Removed tap delay / double-tap zoom app-wide
+- Contained overscroll/rubber-banding on mobile
+- Checkbox pop + stat pulse micro-interactions
+- Desktop card hover lift
+- Emerald Green + Black theme
+
+---
+
+# 🎉 v1.0 Complete
+
+All 8 planned phases are done. GymSync now covers onboarding, a live
+dashboard, automatic workout logic, a full workout-logging screen,
+persisted stats, workout history, and a mobile-optimized polish pass —
+entirely offline, with no framework or backend.
 
 ---
 
 # 🛣 Roadmap
-
-## Phase 8 — Polish
-
-- Animation & micro-interaction pass
-- Mobile & performance optimization
 
 ## Future Releases
 

@@ -108,12 +108,12 @@
     });
 
     // Keep the indicator aligned if the viewport crosses the responsive breakpoint.
-    window.addEventListener('resize', debounce(moveIndicatorToActiveLink, 120));
+    window.addEventListener('resize', debounce(moveIndicatorToActiveLink, 120), { passive: true });
 
     // iOS Safari doesn't always fire 'resize' on rotation; cover it explicitly.
     window.addEventListener('orientationchange', () => {
       setTimeout(moveIndicatorToActiveLink, 50);
-    });
+    }, { passive: true });
 
     // Fonts/icons finishing their swap can shift column widths by a pixel or two;
     // re-measure once everything has fully loaded.
@@ -369,16 +369,34 @@
     },
 
     /** Reads whatever real progress exists in storage; defaults are honest zeros. */
-    renderStats() {
+    renderStats(animate = false) {
       const streak = Storage.get('streak', 0);
       const completedThisWeek = Storage.get('completedThisWeek', 0);
       const lastWorkout = Storage.get('lastWorkout', null);
 
-      this.els.statStreak.textContent = String(streak);
-      this.els.statCompleted.textContent = `${completedThisWeek}/${TRAINING_DAYS_PER_WEEK}`;
+      const nextStreakText = String(streak);
+      const nextCompletedText = `${completedThisWeek}/${TRAINING_DAYS_PER_WEEK}`;
+
+      const streakChanged = this.els.statStreak.textContent !== nextStreakText;
+      const completedChanged = this.els.statCompleted.textContent !== nextCompletedText;
+
+      this.els.statStreak.textContent = nextStreakText;
+      this.els.statCompleted.textContent = nextCompletedText;
       this.els.statLastWorkout.textContent = lastWorkout
         ? `${lastWorkout.split} \u2014 ${lastWorkout.dateLabel}`
         : 'No workouts yet';
+
+      // Only pulse numbers that actually moved, and only when asked to
+      // (e.g. right after finishing a workout) — not on the initial load.
+      if (animate && streakChanged) this.pulseStat(this.els.statStreak);
+      if (animate && completedChanged) this.pulseStat(this.els.statCompleted);
+    },
+
+    /** Briefly pulses a stat value to draw the eye to a real change. */
+    pulseStat(el) {
+      el.classList.remove('is-updated');
+      void el.offsetWidth; // restart the animation even if it's still running
+      el.classList.add('is-updated');
     },
 
     renderQuote(date = new Date()) {
@@ -504,7 +522,14 @@
       inputs.append(weightLabel, notesLabel);
       li.append(top, inputs);
 
-      checkbox.addEventListener('change', () => this.updateProgress());
+      checkbox.addEventListener('change', () => {
+        this.updateProgress();
+        if (checkbox.checked) {
+          checkLabel.classList.remove('is-popping');
+          void checkLabel.offsetWidth; // restart the animation on repeat clicks
+          checkLabel.classList.add('is-popping');
+        }
+      });
 
       return li;
     },
@@ -682,7 +707,7 @@
       this.els.finishBtn.addEventListener('click', () => this.finishWorkout());
       this.els.summaryDoneBtn.addEventListener('click', () => {
         this.els.summaryOverlay.hidden = true;
-        Dashboard.renderStats();
+        Dashboard.renderStats(true);
         setActiveView('home');
       });
     },

@@ -19,9 +19,9 @@
   --color-text-tertiary: #6b6b6b;
 
   /* Brand */
-  --color-primary: #5e35b1;
-  --color-primary-strong: #8249dd;
-  --color-primary-glow: rgba(94, 53, 177, 0.35);
+  --color-primary: #059669;
+  --color-primary-strong: #10b981;
+  --color-primary-glow: rgba(16, 185, 129, 0.35);
   --color-danger: #e5484d;
   --color-warning: #f5a623;
   --color-credits-accent: #a931ff;
@@ -76,6 +76,7 @@
 html {
   color-scheme: dark;
   -webkit-text-size-adjust: 100%;
+  overscroll-behavior-y: contain; /* stops the whole page rubber-banding on iOS/Android */
 }
 
 body {
@@ -103,16 +104,18 @@ button {
   background: none;
   border: none;
   cursor: pointer;
+  touch-action: manipulation; /* kills the old 300ms tap delay + double-tap zoom */
   -webkit-tap-highlight-color: transparent;
-}
-
-ul {
-  list-style: none;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  touch-action: manipulation;
+}
+
+ul {
+  list-style: none;
 }
 
 /* Respect reduced-motion preferences */
@@ -178,7 +181,7 @@ p {
   padding: var(--space-5);
   background: radial-gradient(
     circle at 50% 20%,
-    rgba(94, 53, 177, 0.16),
+    rgba(16, 185, 129, 0.16),
     transparent 60%
   ),
   var(--color-bg);
@@ -267,7 +270,7 @@ p {
   color: #ffffff;
   background: var(--color-primary);
   border-radius: var(--radius-md);
-  box-shadow: 0 6px 20px rgba(94, 53, 177, 0.3);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
   transition: background var(--duration-base) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-base) var(--ease-standard),
@@ -315,7 +318,7 @@ p {
   padding: var(--space-5);
   background: radial-gradient(
     circle at 50% 20%,
-    rgba(94, 53, 177, 0.18),
+    rgba(16, 185, 129, 0.18),
     transparent 60%
   ),
   var(--color-bg);
@@ -394,7 +397,7 @@ p {
   color: #ffffff;
   background: var(--color-primary);
   border-radius: var(--radius-md);
-  box-shadow: 0 6px 20px rgba(94, 53, 177, 0.3);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
   transition: background var(--duration-base) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard);
 }
@@ -500,6 +503,7 @@ p {
   background: var(--color-primary-glow);
   box-shadow: 0 0 24px 2px var(--color-primary-glow);
   opacity: 0; /* hidden until JS has measured + placed it once, avoids wrong-spot flash */
+  will-change: transform;
   transition: transform var(--duration-slow) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
   pointer-events: none;
@@ -552,7 +556,7 @@ p {
   padding: var(--space-6) var(--space-5);
   margin-bottom: var(--space-4);
   text-align: center;
-  background: linear-gradient(160deg, var(--color-card), rgba(94, 53, 177, 0.08));
+  background: linear-gradient(160deg, var(--color-card), rgba(16, 185, 129, 0.08));
 }
 
 .split-card__label {
@@ -626,6 +630,16 @@ p {
   letter-spacing: 0.04em;
 }
 
+.stat-card__value.is-updated {
+  animation: value-pulse 420ms var(--ease-standard);
+}
+
+@keyframes value-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.12); color: var(--color-primary-strong); }
+  100% { transform: scale(1); }
+}
+
 /* Motivational quote */
 .quote-card {
   padding: var(--space-5);
@@ -656,7 +670,7 @@ p {
   color: #ffffff;
   background: var(--color-primary);
   border-radius: var(--radius-md);
-  box-shadow: 0 10px 30px rgba(94, 53, 177, 0.35);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.35);
   transition: background var(--duration-base) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard),
     box-shadow var(--duration-base) var(--ease-standard);
@@ -822,7 +836,7 @@ p {
 .exercise-card__inputs input {
   width: 100%;
   padding: 10px var(--space-3);
-  font-size: 0.92rem;
+  font-size: 1rem; /* iOS Safari zooms the page on focus if an input is under 16px */
   font-family: var(--font-body);
   color: var(--color-text);
   background: rgba(255, 255, 255, 0.04);
@@ -881,6 +895,16 @@ p {
   outline-offset: 2px;
 }
 
+.exercise-card__check-visual.is-popping {
+  animation: check-pop 320ms var(--ease-standard);
+}
+
+@keyframes check-pop {
+  0% { transform: scale(1); }
+  45% { transform: scale(1.3); }
+  100% { transform: scale(1); }
+}
+
 /* Completed state: dims the card and strikes the exercise name */
 .exercise-card:has(.exercise-card__checkbox:checked) {
   opacity: 0.6;
@@ -901,7 +925,7 @@ p {
   color: #ffffff;
   background: var(--color-primary);
   border-radius: var(--radius-md);
-  box-shadow: 0 10px 30px rgba(94, 53, 177, 0.35);
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.35);
   transition: background var(--duration-base) var(--ease-standard),
     transform var(--duration-fast) var(--ease-standard),
     opacity var(--duration-base) var(--ease-standard);
@@ -1086,6 +1110,7 @@ p {
 .card:hover {
   background: var(--color-card-hover);
   border-color: var(--color-border-strong);
+  transform: translateY(-2px);
 }
 
 /* ---------- Animations ---------- */
