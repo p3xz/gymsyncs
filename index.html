@@ -258,16 +258,62 @@
       </div>
 
       <div class="view" id="view-profile" data-view-panel="profile" hidden>
-        <div class="placeholder-card fade-in">
+        <header class="dash-header fade-in">
           <h1>Profile</h1>
-          <p>Settings and profile details arrive in a later phase.</p>
+          <p class="dash-header__meta">Manage your name, progress, and data</p>
+        </header>
 
+        <section class="card profile-card fade-in">
+          <p class="profile-card__label">Your Name</p>
+          <form class="profile-name-form" id="profileNameForm" novalidate>
+            <input
+              type="text"
+              id="profileNameInput"
+              class="profile-name-form__input"
+              maxlength="30"
+              autocomplete="name"
+            />
+            <button class="profile-name-form__save" id="profileNameSaveBtn" type="submit" disabled>
+              Save
+            </button>
+          </form>
+          <p class="profile-card__saved-note" id="profileNameSavedNote" hidden>Saved.</p>
+        </section>
+
+        <section class="stat-grid fade-in">
+          <div class="card stat-card">
+            <span class="stat-card__icon" aria-hidden="true">&#128200;</span>
+            <p class="stat-card__value stat-number" id="profileTotalWorkouts">0</p>
+            <p class="stat-card__label">Total Workouts</p>
+          </div>
+          <div class="card stat-card">
+            <span class="stat-card__icon" aria-hidden="true">&#128293;</span>
+            <p class="stat-card__value stat-number" id="profileCurrentStreak">0</p>
+            <p class="stat-card__label">Current Streak</p>
+          </div>
+          <div class="card stat-card stat-card--wide">
+            <span class="stat-card__icon" aria-hidden="true">&#127942;</span>
+            <p class="stat-card__value stat-number" id="profileBestStreak">0</p>
+            <p class="stat-card__label">Best Streak</p>
+          </div>
+        </section>
+
+        <section class="card danger-card fade-in">
+          <p class="danger-card__title">Reset All Data</p>
+          <p class="danger-card__desc">
+            Permanently clears your name, stats, and workout history from this device.
+            This can&rsquo;t be undone.
+          </p>
+          <button class="danger-card__button" id="resetDataBtn" type="button">Reset All Data</button>
+        </section>
+
+        <section class="card credits-card fade-in">
           <div class="credits">
             <p>&copy; 2026 GymSync. All rights reserved.</p>
             <p>Contact Us: <a class="credits__link" href="mailto:nam4sh@gmail.com">nam4sh@gmail.com</a></p>
             <p>Designed by <a href="https://instagram.com/nam7sh" target="_blank" class="credits__link">Namish Yadav</a></p>
           </div>
-        </div>
+        </section>
       </div>
     </main>
 

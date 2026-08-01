@@ -1066,11 +1066,115 @@ p {
   white-space: nowrap;
 }
 
+/* ---------- Profile ---------- */
+.profile-card,
+.danger-card,
+.credits-card {
+  padding: var(--space-5);
+  margin-bottom: var(--space-4);
+}
+
+.profile-card__label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-tertiary);
+  margin-bottom: var(--space-3);
+}
+
+.profile-name-form {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.profile-name-form__input {
+  flex: 1;
+  min-width: 0;
+  padding: 12px var(--space-3);
+  font-size: 1rem;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-base) var(--ease-standard);
+}
+
+.profile-name-form__input:focus {
+  outline: none;
+  border-color: var(--color-primary-strong);
+}
+
+.profile-name-form__save {
+  flex-shrink: 0;
+  padding: 12px var(--space-4);
+  font-weight: 600;
+  color: #ffffff;
+  background: var(--color-primary);
+  border-radius: var(--radius-sm);
+  transition: background var(--duration-base) var(--ease-standard),
+    opacity var(--duration-base) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
+
+.profile-name-form__save:hover:not(:disabled) {
+  background: var(--color-primary-strong);
+}
+
+.profile-name-form__save:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.profile-name-form__save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.profile-card__saved-note {
+  margin-top: var(--space-2);
+  font-size: 0.82rem;
+  color: var(--color-primary-strong);
+}
+
+.profile-card__saved-note[hidden] {
+  display: none;
+}
+
+/* Danger zone: same card shape, tinted red border instead of a new component */
+.danger-card {
+  border-color: rgba(229, 72, 77, 0.25);
+}
+
+.danger-card__title {
+  font-weight: 600;
+  color: var(--color-danger);
+  margin-bottom: var(--space-1);
+}
+
+.danger-card__desc {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-3);
+}
+
+.danger-card__button {
+  width: 100%;
+  padding: 12px var(--space-4);
+  font-weight: 600;
+  color: var(--color-danger);
+  background: rgba(229, 72, 77, 0.1);
+  border: 1px solid rgba(229, 72, 77, 0.35);
+  border-radius: var(--radius-md);
+  transition: background var(--duration-base) var(--ease-standard);
+}
+
+.danger-card__button:hover {
+  background: rgba(229, 72, 77, 0.18);
+}
+
 /* ---------- Profile credits ---------- */
 .credits {
-  margin-top: var(--space-6);
-  padding-top: var(--space-4);
-  border-top: 1px solid var(--color-border);
   display: flex;
   flex-direction: column;
   gap: var(--space-1);

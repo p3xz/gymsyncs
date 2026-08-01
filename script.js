@@ -6,11 +6,11 @@
 (() => {
   'use strict';
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * STORAGE — thin, namespaced wrapper around localStorage.
    * Every later phase (workouts, history, streaks) reads/writes through
    * this same helper, so there's one place that handles JSON + failures.
-   * ------------------------------------------------------------------ */
+   *     */
   const Storage = {
     prefix: 'gymsync:',
 
@@ -42,6 +42,13 @@
     remove(key) {
       localStorage.removeItem(Storage.prefix + key);
     },
+
+    /** Wipes every gymsync-namespaced key, leaving unrelated site storage alone. */
+    clearAll() {
+      Object.keys(localStorage)
+        .filter((key) => key.startsWith(Storage.prefix))
+        .forEach((key) => localStorage.removeItem(key));
+    },
   };
 
   /** Cached DOM references used across this module. */
@@ -70,6 +77,10 @@
 
     if (viewName === 'history') {
       HistoryScreen.render();
+    }
+
+    if (viewName === 'profile') {
+      ProfileScreen.render();
     }
   }
 
@@ -133,10 +144,10 @@
     };
   }
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * ONBOARDING — first-launch name capture.
    * Shown once; the saved name gates it out on every visit after.
-   * ------------------------------------------------------------------ */
+   *     */
   const onboarding = document.getElementById('onboarding');
   const onboardingForm = document.getElementById('onboardingForm');
   const nameInput = document.getElementById('nameInput');
@@ -199,10 +210,10 @@
     });
   }
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * DATE KEYS — local (not UTC) yyyy-mm-dd keys, used to compare "days"
    * for streak and weekly-completion logic without timezone drift.
-   * ------------------------------------------------------------------ */
+   *     */
   function toDateKey(date) {
     const y = date.getFullYear();
     const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -223,13 +234,13 @@
     return toDateKey(addDays(date, -daysSinceMonday));
   }
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * WORKOUT LOGIC (Phase 4)
    * Two responsibilities: (1) map each weekday to its split, and
    * (2) map each split to the exercises that make it up. Together these
    * answer "what is today's workout" — Phase 5's Workout Screen renders
    * whatever this module returns, rather than owning any of this logic.
-   * ------------------------------------------------------------------ */
+   *     */
   const WORKOUT_SPLIT_BY_DAY = [
     'REST', // Sunday
     'PUSH', // Monday
@@ -289,10 +300,10 @@
     return { split, exercises: getExercisesForSplit(split) };
   }
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * DASHBOARD — Home view: greeting, live clock, today's split,
    * quick stats, and the motivational quote.
-   * ------------------------------------------------------------------ */
+   *     */
   const QUOTES = [
     { text: 'The only bad workout is the one that didn\u2019t happen.', author: 'Unknown' },
     { text: 'Discipline is choosing between what you want now and what you want most.', author: 'Abraham Lincoln' },
@@ -425,13 +436,13 @@
     },
   };
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * WORKOUT SCREEN (Phase 5)
    * Renders today's exercises from the Workout Logic module, tracks a
    * live elapsed timer, and lets the person log weight/notes and check
    * exercises off. Persistence and the full summary belong to Phase 6 —
    * this module only owns the live interaction.
-   * ------------------------------------------------------------------ */
+   *     */
   const WorkoutScreen = {
     els: {
       restState: document.getElementById('workoutRestState'),
@@ -619,6 +630,7 @@
         const currentStreak = Storage.get('streak', 0);
         const nextStreak = lastWorkoutDateKey === yesterdayKey ? currentStreak + 1 : 1;
         Storage.set('streak', nextStreak);
+        Storage.set('bestStreak', Math.max(Storage.get('bestStreak', 0), nextStreak));
 
         // Weekly completion: resets whenever we've crossed into a new Monday.
         const thisWeekStartKey = getWeekStartKey(now);
@@ -713,12 +725,12 @@
     },
   };
 
-  /* ------------------------------------------------------------------ *
+  /*     *
    * HISTORY (Phase 7)
    * Reads the workoutHistory log built by WorkoutScreen.persistProgress
    * and renders it as an expandable list. Re-renders every time the tab
    * opens, since new entries can appear at any point in the session.
-   * ------------------------------------------------------------------ */
+   *     */
   const HistoryScreen = {
     els: {
       meta: document.getElementById('historyMeta'),
@@ -819,6 +831,75 @@
       history.forEach((entry) => {
         this.els.list.appendChild(this.buildEntryCard(entry));
       });
+    },
+  };
+
+  /*     *
+   * PROFILE (Phase 9)
+   * Lets the person change their saved name, see a quick lifetime stats
+   * summary, and wipe their data if they want a clean slate.
+   *     */
+  const ProfileScreen = {
+    els: {
+      nameForm: document.getElementById('profileNameForm'),
+      nameInput: document.getElementById('profileNameInput'),
+      nameSaveBtn: document.getElementById('profileNameSaveBtn'),
+      savedNote: document.getElementById('profileNameSavedNote'),
+      totalWorkouts: document.getElementById('profileTotalWorkouts'),
+      currentStreak: document.getElementById('profileCurrentStreak'),
+      bestStreak: document.getElementById('profileBestStreak'),
+      resetBtn: document.getElementById('resetDataBtn'),
+    },
+
+    wired: false, // event listeners only need to be attached once
+
+    /** Enables Save only once the input actually differs from what's stored. */
+    updateSaveButtonState() {
+      const savedName = getSavedName() || '';
+      const typedName = this.els.nameInput.value.trim();
+      this.els.nameSaveBtn.disabled = typedName.length === 0 || typedName === savedName;
+    },
+
+    saveName(event) {
+      event.preventDefault();
+      const newName = this.els.nameInput.value.trim();
+      if (!newName) return;
+
+      Storage.set('userName', newName);
+      Dashboard.renderGreeting();
+      this.updateSaveButtonState();
+
+      this.els.savedNote.hidden = false;
+      window.setTimeout(() => {
+        this.els.savedNote.hidden = true;
+      }, 2000);
+    },
+
+    resetAllData() {
+      const confirmed = window.confirm(
+        'Reset all GymSync data on this device? Your name, streak, and workout history will be permanently deleted.'
+      );
+      if (!confirmed) return;
+
+      Storage.clearAll();
+      window.location.reload(); // simplest way back to a truly fresh first-launch state
+    },
+
+    /** Renders the name field and stats from whatever's currently in storage. */
+    render() {
+      this.els.nameInput.value = getSavedName() || '';
+      this.updateSaveButtonState();
+
+      this.els.totalWorkouts.textContent = String(Storage.get('workoutHistory', []).length);
+      this.els.currentStreak.textContent = String(Storage.get('streak', 0));
+      this.els.bestStreak.textContent = String(Storage.get('bestStreak', 0));
+
+      if (!this.wired) {
+        this.wired = true;
+        this.els.nameInput.addEventListener('input', () => this.updateSaveButtonState());
+        this.els.nameForm.addEventListener('submit', (event) => this.saveName(event));
+        this.els.resetBtn.addEventListener('click', () => this.resetAllData());
+      }
     },
   };
 
