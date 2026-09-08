@@ -240,7 +240,7 @@ GymSync/
 Clone the repository
 
 ```bash
-git clone https://github.com/namish-yadav/gymsyncs.git
+git clone https://github.com/p3xz/gymsyncs.git
 ```
 
 Open the project
@@ -396,7 +396,7 @@ This project is licensed under the MIT License.
 
 **Namish Yadav**
 
-- GitHub: https://github.com/namish-yadav
+- GitHub: https://github.com/p3xz
 - LinkedIn: https://www.linkedin.com/in/namish-yadav-639769408/
 - Instagram: https://instagram.com/nam7sh
 

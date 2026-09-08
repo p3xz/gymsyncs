@@ -1,0 +1,30 @@
+# Environment variables — never commit these
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Build / dist
+dist/
+
+# macOS
+.DS_Store
+
+# TypeScript
+*.tsbuildinfo
+
+# Expo
+.expo/
+
+# Package manager lock files
+# pnpm-lock.yaml
+
+# Editor
+.vscode/
+.idea/
