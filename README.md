@@ -1,5 +1,7 @@
 # GymSync
 
+![Preview](preview.png)
+
 <img src="assets/logo.svg" width="120" alt="GymSync Logo">
 
 > GymSync is an offline-first fitness tracker that lives entirely in your browser, giving you a daily Push/Pull/Legs workout dashboard with live logging, streaks and history, with no account, no backend and no network calls.
@@ -66,11 +68,7 @@
 
 ## Screenshots
 
-Screenshots will be added as development progresses.
-
-```text
-assets/screenshots/
-```
+![Preview](preview.png)
 
 ## Project Structure
 
