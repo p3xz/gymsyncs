@@ -37,6 +37,8 @@ September 2026.
 
 ## Tech Stack
 
+![HTML](https://skillicons.dev/icons?i=html) ![CSS](https://skillicons.dev/icons?i=css) ![JavaScript](https://skillicons.dev/icons?i=js)
+
 - HTML5
 - CSS3
 - Vanilla JavaScript (ES6)
